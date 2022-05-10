@@ -1,0 +1,64 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: geocitizen
+  labels:
+    env  : prod
+    app  : geocitizen
+    owner: diva
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      project: geoapp
+  template:
+    metadata:
+      labels:
+        project: geoapp   # Service will look for those PODS Labels!!!
+    spec:
+      containers:
+        - name : geocitizen
+          image: tomcat:9.0.62-jdk11-temurin-focal  #dimivanchenko/geocitizen:latest
+          ports:
+            - containerPort: 8080
+
+---
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: geocitizen-autoscaling
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v2beta1v1
+    kind: Deployment
+    name: geocitizen
+  minReplicas: 2
+  maxReplicas: 4
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      targetAverageUtilization: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: geocitizen-autoscaling-pod-service
+  labels:
+     app  : geoapp
+     env  : prod
+     owner: diva
+spec:
+  type: LoadBalancer
+  selector:
+    project: geoapp     # Selecting PODs with those Labels
+  ports:
+    - name      : geocitizen
+      protocol  : TCP
+      port      : 8080  # Port on Load Balancer
+      targetPort: 8080  # Port on Pod

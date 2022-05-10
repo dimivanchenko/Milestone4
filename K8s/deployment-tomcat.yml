@@ -1,0 +1,46 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: geocitizen
+  labels:
+    env  : prod
+    app  : geocitizen
+    owner: diva
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      project: geoapp
+  template:
+    metadata:
+      labels:
+        project: geoapp
+    spec:
+      containers:
+        - name : geotomcat
+          image: tomcat:9.0.62-jdk11-temurin-focal
+          ports:
+            - containerPort: 8080
+
+
+---
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: tomcat-autoscaling
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v2beta1v1
+    kind: Deployment
+    name: geocitizen
+  minReplicas: 2
+  maxReplicas: 4
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      targetAverageUtilization: 80

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-clusterip
+  labels:
+    app  : postgres
+    env  : prod
+    owner: diva
+spec:
+  type: ClusterIP
+  selector:
+    project: postgres      # Selecting PODs with those Labels
+  ports:
+    - name      : postgres
+      protocol  : TCP
+      port      : 5432     # Port on Load Balancer
+      targetPort: 5432     # Port on Pod

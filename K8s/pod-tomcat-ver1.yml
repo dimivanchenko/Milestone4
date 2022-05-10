@@ -1,0 +1,14 @@
+apiVersion : v1
+kind: Pod
+metadata:
+  name: tomcat
+  labels:
+    env  : prod
+    app  : main
+    owner: diva
+spec:
+  containers:
+    - name : tomcat
+      image: tomcat:9.0.62-jdk11-temurin-focal # we can chandge image without destroy POD
+      ports:
+        - containerPort: 8080
