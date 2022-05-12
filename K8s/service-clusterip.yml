@@ -14,12 +14,11 @@ spec:
   template:
     metadata:
       labels:
-        project: geoapp   
-        # Service will look for those PODS Labels!!!
+        project: geoapp   # Service will look for those PODS Labels!!!
     spec:
       containers:
         - name : geocitizen
-          image: dimivanchenko/geocitizen:latest      # tomcat:9.0.62-jdk11-temurin-focal
+          image: tomcat:9.0.62-jdk11-temurin-focal  #dimivanchenko/geocitizen:latest
           ports:
             - containerPort: 8080
 
@@ -49,13 +48,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: geocitizen-service
+  name: geocitizen-autoscaling-pod-service
   labels:
      app  : geoapp
      env  : prod
      owner: diva
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     project: geoapp     # Selecting PODs with those Labels
   ports:

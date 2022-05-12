@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-hosts-geo
+spec:
+  rules:
+    - host: geoapp.itacad.ga
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: geocitizen-autoscaling-pod-service
+                port:
+                  number: 8080
